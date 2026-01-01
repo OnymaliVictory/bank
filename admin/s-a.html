@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Super Admin | StarBank</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+body{background:#0b1c3d;color:#fff}
+.container{padding:30px}
+h1{margin-bottom:20px}
+.card{background:#102a5e;padding:20px;border-radius:16px;margin-bottom:20px}
+input,button,select{
+  width:100%;padding:10px;border-radius:10px;border:none;margin-bottom:10px
+}
+button{background:#ffd700;color:#0b1c3d;font-weight:600;cursor:pointer}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:10px;border-bottom:1px solid #223}
+.status-completed{color:#00ff9c}
+.status-flagged{color:#ff9800}
+.status-reversed{color:#ff4d4d}
+.status-pending{color:#ffd700}
+.action-btn{padding:6px 10px;border-radius:6px;font-size:12px}
+.freeze{background:#ff4d4d;color:#fff}
+.unfreeze{background:#00ff9c;color:#000}
+.reverse{background:#ffd700}
+.flag{background:#ff9800}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>👑 Super Admin Dashboard</h1>
+
+<!-- SEND DEMO CASH -->
+<div class="card">
+<h3>💸 Send Demo Cash</h3>
+<input id="adminAccount" placeholder="Recipient Account Number">
+<input id="adminAmount" type="number" placeholder="Amount">
+<button onclick="sendDemoCash()">Send Funds</button>
+</div>
+
+<!-- LIVE TRANSACTIONS -->
+<div class="card">
+<h3>📊 Live Transactions</h3>
+<table class="table">
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="txTable"></tbody>
+</table>
+</div>
+
+<!-- USER CONTROL -->
+<div class="card">
+<h3>⛔ Freeze / Unfreeze Account</h3>
+<input id="freezeAccount" placeholder="Account Number">
+<button onclick="toggleFreeze()">Toggle Freeze</button>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const supabaseClient = supabase.createClient(
+  "https://twdginhsctejjqyfwqxm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZGdpbmhzY3RlampxeWZ3cXhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTg3NTEsImV4cCI6MjA4MjI3NDc1MX0.7x5TdZGIGb8-icaJKWC9YWhCxbllZ7Zyz9fthDsFoUc"
+);
+
+/* 💸 SEND DEMO CASH */
+async function sendDemoCash(){
+  const acc = adminAccount.value.trim();
+  const amt = Number(adminAmount.value);
+
+  if(!acc || amt <= 0) return alert("Invalid input");
+
+  const { error } = await supabaseClient.rpc("admin_credit",{
+    target_account: acc,
+    amt
+  });
+
+  if(error){ alert(error.message); return; }
+
+  alert("Demo cash sent & email alert triggered");
+  adminAccount.value="";
+  adminAmount.value="";
+}
+
+/* 📊 LOAD TRANSACTIONS */
+async function loadTransactions(){
+  const { data } = await supabaseClient
+    .from("transactions")
+    .select("*")
+    .order("created_at",{ascending:false})
+    .limit(50);
+
+  txTable.innerHTML="";
+
+  data.forEach(tx=>{
+    txTable.innerHTML+=`
+      <tr>
+        <td>${tx.sender_id || "ADMIN"}</td>
+        <td>${tx.receiver_id}</td>
+        <td>$${tx.amount}</td>
+        <td class="status-${tx.status}">${tx.status}</td>
+        <td>
+          <button class="action-btn reverse" onclick="reverseTx('${tx.id}')">Reverse</button>
+          <button class="action-btn flag" onclick="flagTx('${tx.id}')">Flag</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+/* 🔄 REVERSE TRANSACTION */
+async function reverseTx(id){
+  if(!confirm("Reverse this transaction?")) return;
+
+  const { error } = await supabaseClient.rpc("admin_reverse_tx",{ tx_id:id });
+  if(error){ alert(error.message); return; }
+
+  alert("Transaction reversed");
+  loadTransactions();
+}
+
+/* 🚨 FLAG TRANSACTION */
+async function flagTx(id){
+  const { error } = await supabaseClient
+    .from("transactions")
+    .update({ status:"flagged" })
+    .eq("id",id);
+
+  if(error){ alert(error.message); return; }
+  loadTransactions();
+}
+
+/* ⛔ FREEZE / UNFREEZE */
+async function toggleFreeze(){
+  const acc = freezeAccount.value.trim();
+  if(!acc) return;
+
+  const { data } = await supabaseClient
+    .from("profiles")
+    .select("is_frozen")
+    .eq("account_number",acc)
+    .single();
+
+  await supabaseClient
+    .from("profiles")
+    .update({ is_frozen: !data.is_frozen })
+    .eq("account_number",acc);
+
+  alert("Account status updated");
+  freezeAccount.value="";
+}
+
+loadTransactions();
+setInterval(loadTransactions, 5000);
+</script>
+
+</body>
+</html>

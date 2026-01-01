@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Verification | StarBank</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Poppins,sans-serif;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#0b1c3d,#102a5e);
+}
+
+.container{
+  background:#fff;
+  max-width:460px;
+  width:100%;
+  padding:45px;
+  border-radius:22px;
+  text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+  animation:popIn .8s ease;
+}
+
+@keyframes popIn{
+  from{opacity:0;transform:scale(.9)}
+  to{opacity:1;transform:scale(1)}
+}
+
+.icon{
+  width:90px;
+  height:90px;
+  margin:auto;
+  border-radius:50%;
+  background:rgba(255,215,0,.15);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+  100%{transform:scale(1)}
+}
+
+.icon img{
+  width:48px;
+}
+
+h1{
+  margin-top:25px;
+  font-size:26px;
+  color:#0b1c3d;
+}
+
+p{
+  margin-top:12px;
+  font-size:14px;
+  color:#64748b;
+  line-height:1.6;
+}
+
+.email-box{
+  margin:20px 0;
+  background:#f8fafc;
+  padding:12px;
+  border-radius:12px;
+  font-size:14px;
+  color:#334155;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:30px;
+  background:#ffd700;
+  color:#0b1c3d;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.3s;
+  margin-top:15px;
+}
+
+button:hover{
+  background:#e6c200;
+  transform:translateY(-2px);
+}
+
+.secondary{
+  background:#fff;
+  border:1px solid #cbd5e1;
+  color:#0b1c3d;
+}
+
+.secondary:hover{
+  background:#f1f5f9;
+}
+
+.note{
+  margin-top:25px;
+  font-size:12px;
+  color:#64748b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="icon">
+    <img src="https://img.icons8.com/fluency/96/secured-letter.png" alt="Email Sent">
+  </div>
+
+  <h1>Verify Your Email</h1>
+
+  <p>
+    Your account has been created successfully 🎉  
+    Please check your email inbox and click the verification link
+    to activate your banking account.
+  </p>
+
+  <div class="email-box" id="emailBox">
+    📧 Verification email sent to your registered email address
+  </div>
+
+  <button id="resendBtn">Resend Verification Email</button>
+
+  <button class="secondary" onclick="location.href='login.html'">
+    Go to Login
+  </button>
+
+  <div class="note">
+    Didn’t receive the email? Check your spam folder or try resending.
+  </div>
+</div>
+
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script>
+  const supabaseUrl = 'https://twdginhsctejjqyfwqxm.supabase.co';
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZGdpbmhzY3RlampxeWZ3cXhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTg3NTEsImV4cCI6MjA4MjI3NDc1MX0.7x5TdZGIGb8-icaJKWC9YWhCxbllZ7Zyz9fthDsFoUc';
+  const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+  // Get email from URL query parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const email = urlParams.get('email');
+
+  const emailBox = document.getElementById('emailBox');
+  if(email){
+    emailBox.textContent = `📧 Verification email sent to: ${email}`;
+  } else {
+    emailBox.textContent = '📧 Verification email sent to your registered email address';
+  }
+
+  // Resend verification email
+  document.getElementById("resendBtn").addEventListener("click", async () => {
+    if(!email){
+      alert("Email not found. Please go back to registration page.");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/login.html'
+      });
+      if(error) throw error;
+      alert("Verification email resent successfully! Please check your inbox.");
+    } catch(err){
+      alert("Error resending email: " + err.message);
+    }
+  });
+</script>
+
+</body>
+</html>

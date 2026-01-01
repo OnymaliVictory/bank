@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account | StarBank</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Poppins,sans-serif;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#0b1c3d,#102a5e);
+}
+
+.container{
+  background:#fff;
+  width:100%;
+  max-width:450px;
+  padding:40px;
+  border-radius:20px;
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+}
+
+.logo{
+  text-align:center;
+  font-size:28px;
+  font-weight:700;
+  color:#0b1c3d;
+  margin-bottom:10px;
+}
+
+.logo span{color:#ffd700}
+
+.subtitle{
+  text-align:center;
+  font-size:14px;
+  color:#64748b;
+  margin-bottom:30px;
+}
+
+.form-group{ margin-bottom:18px; }
+
+label{
+  font-size:13px;
+  font-weight:500;
+  color:#334155;
+}
+
+input,select{
+  width:100%;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid #cbd5e1;
+  outline:none;
+  margin-top:6px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:30px;
+  background:#ffd700;
+  color:#0b1c3d;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.terms{
+  display:flex;
+  gap:8px;
+  font-size:13px;
+  color:#475569;
+  margin-bottom:20px;
+}
+
+.footer-text{
+  text-align:center;
+  font-size:14px;
+  margin-top:20px;
+}
+
+.footer-text a{
+  color:#0b1c3d;
+  font-weight:500;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="logo">Star<span>Bank</span></div>
+  <div class="subtitle">Create your secure banking account</div>
+
+  <form id="registerForm">
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="full_name" required>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" required>
+    </div>
+
+    <div class="form-group">
+      <label>Select Bank</label>
+      <select id="bank_name" required>
+        <option value="">Choose Bank</option>
+        <option value="StarBank">StarBank</option>
+        <option value="NovaBank">NovaBank</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" required>
+    </div>
+
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <input type="password" id="confirm_password" required>
+    </div>
+
+    <div class="terms">
+      <input type="checkbox" id="terms" required>
+      <span>I agree to the Terms & Conditions</span>
+    </div>
+
+    <button type="submit">Create Account</button>
+  </form>
+
+  <div class="footer-text">
+    Already have an account? <a href="login.html">Login</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabaseUrl = "https://twdginhsctejjqyfwqxm.supabase.co";
+const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZGdpbmhzY3RlampxeWZ3cXhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTg3NTEsImV4cCI6MjA4MjI3NDc1MX0.7x5TdZGIGb8-icaJKWC9YWhCxbllZ7Zyz9fthDsFoUc";
+
+const { createClient } = supabase;
+const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+// 🔢 Generate account number ON SIGNUP
+function generateAccountNumber(){
+  return "SB" + Math.floor(1000000000 + Math.random() * 9000000000);
+}
+
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const full_name = document.getElementById("full_name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm_password").value;
+  const bank_name = document.getElementById("bank_name").value;
+
+  if (password !== confirm) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  // 1️⃣ Create auth user
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name, bank_name }
+    }
+  });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  // 2️⃣ Create profile immediately
+  const userId = data.user.id;
+
+  const { error: profileError } = await supabaseClient
+    .from("profiles")
+    .insert({
+      id: userId,
+      full_name,
+      bank_name,
+      account_number: generateAccountNumber(),
+      balance: 0
+    });
+
+  if (profileError) {
+    alert("Account created, but profile setup failed. Please contact support.");
+    return;
+  }
+
+  alert("Account created successfully! Check your email to verify.");
+  window.location.href = "verify.html";
+});
+</script>
+
+</body>
+</html>

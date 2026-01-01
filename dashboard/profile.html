@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile | StarBank</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+
+<style>
+body{font-family:Poppins}
+
+.profile-card{
+  background:#fff;
+  padding:25px;
+  border-radius:22px;
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.profile-card img{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid #102a5e;
+}
+
+.profile-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:25px;
+  margin-top:25px;
+}
+
+.section-card{
+  background:#fff;
+  padding:25px;
+  border-radius:22px;
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+}
+
+.section-card h3{
+  margin-bottom:15px;
+  font-size:18px;
+}
+
+.section-card input,
+.section-card textarea{
+  width:100%;
+  padding:14px;
+  margin-bottom:12px;
+  border-radius:14px;
+  border:1px solid #ddd;
+}
+
+.section-card textarea{
+  resize:none;
+  height:120px;
+}
+
+.section-card button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:30px;
+  background:#102a5e;
+  color:#fff;
+  cursor:pointer;
+}
+
+.rating{
+  display:flex;
+  gap:10px;
+  font-size:26px;
+  cursor:pointer;
+}
+
+.rating span{color:#ccc}
+.rating span.active{color:#ffd700}
+
+body.dark{
+  background:#0b1c3d;
+  color:#fff;
+}
+
+body.dark .section-card,
+body.dark .profile-card{
+  background:#142d5c;
+}
+
+body.dark input,
+body.dark textarea{
+  background:#0b1c3d;
+  color:#fff;
+  border:1px solid #2c4b85;
+}
+</style>
+</head>
+
+<body>
+
+<div class="mobile-header">
+  <div class="hamburger" id="openSidebar">☰</div>
+  <strong>StarBank</strong>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="dashboard-container">
+
+<div class="sidebar" id="sidebar">
+  <h2>Star<span>Bank</span></h2>
+  <a href="index.html">Dashboard</a>
+  <a href="transfer.html">Transfer</a>
+  <a href="transactions.html">Transactions</a>
+  <a href="profile.html">Profile</a>
+
+  <div style="margin:20px">
+    <div id="darkToggle" style="cursor:pointer">🌙 Dark Mode</div>
+  </div>
+
+  <button class="logout-btn" id="logoutBtn">Logout</button>
+</div>
+
+<div class="main-content">
+
+<h1>My Profile</h1>
+
+<div class="profile-card">
+  <img id="profilePic" src="https://dummyimage.com/100x100/102a5e/ffffff&text=Avatar">
+  <div>
+    <strong id="profileName">Loading…</strong><br>
+    <small id="profileEmail"></small>
+    <br><br>
+    <input type="file" id="uploadPic">
+  </div>
+</div>
+
+<div class="profile-grid">
+
+<div class="section-card">
+  <h3>Edit Account Info</h3>
+  <input id="fullName" placeholder="Full Name">
+  <input id="phone" placeholder="Phone">
+  <button id="saveProfile">Save Changes</button>
+</div>
+
+<div class="section-card">
+  <h3>Account Security</h3>
+  <input type="password" id="newPassword" placeholder="New Password">
+  <button id="changePassword">Change Password</button>
+  <br><br>
+  <button id="logoutAll">Logout All Sessions</button>
+</div>
+
+<div class="section-card">
+  <h3>Complaint to HQ</h3>
+  <textarea id="complaintText" placeholder="Describe your issue..."></textarea>
+  <button id="sendComplaint">Send Complaint</button>
+</div>
+
+<div class="section-card">
+  <h3>Rate Our Service</h3>
+  <div class="rating" id="stars">
+    <span data-rate="1">★</span>
+    <span data-rate="2">★</span>
+    <span data-rate="3">★</span>
+    <span data-rate="4">★</span>
+    <span data-rate="5">★</span>
+  </div>
+  <textarea id="ratingComment" placeholder="Optional feedback"></textarea>
+  <button id="submitRating">Submit Rating</button>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// ✅ CREATE GLOBAL SUPABASE CLIENT FOR THIS PAGE
+window.supabase = supabase.createClient(
+  "https://twdginhsctejjqyfwqxm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZGdpbmhzY3RlampxeWZ3cXhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTg3NTEsImV4cCI6MjA4MjI3NDc1MX0.7x5TdZGIGb8-icaJKWC9YWhCxbllZ7Zyz9fthDsFoUc"
+);
+
+/* SIDEBAR */
+openSidebar.onclick = ()=>{sidebar.classList.add("active"); sidebarOverlay.style.display="block"};
+sidebarOverlay.onclick = ()=>{sidebar.classList.remove("active"); sidebarOverlay.style.display="none"};
+darkToggle.onclick = ()=>document.body.classList.toggle("dark");
+
+/* LOAD PROFILE */
+async function loadProfile(){
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if(error || !user) return location.href="../auth/login.html";
+
+    profileEmail.textContent = user.email;
+
+    let { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if(!profile){
+      const { data: newProfile, error: insertError } = await supabase.from("profiles")
+        .insert({
+          id: user.id,
+          full_name: user.user_metadata?.full_name || "Unnamed",
+          phone: "",
+          avatar_url: ""
+        })
+        .select()
+        .single();
+      if(insertError) { alert("Profile creation failed: "+insertError.message); return; }
+      profile = newProfile;
+    }
+
+    profileName.textContent = profile.full_name;
+    fullName.value = profile.full_name;
+    phone.value = profile.phone || "";
+    if(profile.avatar_url) profilePic.src = profile.avatar_url;
+
+  } catch(err) {
+    console.error(err);
+    alert("Failed to load profile");
+  }
+}
+
+loadProfile();
+
+/* UPDATE PROFILE */
+saveProfile.onclick = async ()=>{
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if(error || !user) return;
+
+  await supabase.from("profiles").update({
+    full_name: fullName.value,
+    phone: phone.value
+  }).eq("id", user.id);
+  alert("Profile updated");
+}
+
+/* UPLOAD PICTURE */
+uploadPic.onchange = async ()=>{
+  const file = uploadPic.files[0];
+  if(!file) return;
+
+  const { data: { user } } = await supabase.auth.getUser();
+  const path = `avatars/${user.id}.png`;
+
+  const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, { upsert:true });
+  if(uploadError){ alert("Upload failed: "+uploadError.message); return; }
+
+  const { data: publicUrlData } = supabase.storage.from("avatars").getPublicUrl(path);
+  await supabase.from("profiles").update({ avatar_url: publicUrlData.publicUrl }).eq("id", user.id);
+  profilePic.src = publicUrlData.publicUrl;
+}
+
+/* PASSWORD */
+changePassword.onclick = async ()=>{
+  const { data: { user } } = await supabase.auth.getUser();
+  await supabase.auth.updateUser({ password: newPassword.value });
+  alert("Password changed");
+}
+
+/* LOGOUT ALL */
+logoutAll.onclick = async ()=>{
+  await supabase.auth.signOut();
+  location.href="../auth/login.html";
+}
+
+/* COMPLAINT */
+sendComplaint.onclick = async ()=>{
+  const { data: { user } } = await supabase.auth.getUser();
+  await supabase.from("complaints").insert({
+    user_id: user.id,
+    message: complaintText.value
+  });
+  alert("Complaint sent");
+  complaintText.value="";
+}
+
+/* RATING */
+let rate=0;
+stars.querySelectorAll("span").forEach(s=>{
+  s.onclick=()=>{
+    rate=s.dataset.rate;
+    stars.querySelectorAll("span").forEach(x=>x.classList.remove("active"));
+    for(let i=0;i<rate;i++) stars.children[i].classList.add("active");
+  }
+});
+
+submitRating.onclick=async ()=>{
+  const { data: { user } } = await supabase.auth.getUser();
+  await supabase.from("ratings").insert({
+    user_id:user.id,
+    rating:rate,
+    comment:ratingComment.value
+  });
+  alert("Thanks for the feedback!");
+  ratingComment.value="";
+};
+</script>
+
+</body>
+</html>

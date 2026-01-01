@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard | StarBank</title>
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===== MOBILE HEADER ===== */
+.mobile-header{
+  display:none;
+  background:#102a5e;
+  color:#fff;
+  padding:15px 20px;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.hamburger{
+  font-size:26px;
+  cursor:pointer;
+}
+
+/* ===== OVERLAY ===== */
+.sidebar-overlay{
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.4);
+  z-index:998;
+}
+
+/* ===== MOBILE SIDEBAR ===== */
+@media(max-width:900px){
+  .mobile-header{
+    display:flex;
+  }
+
+  .dashboard-container{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    position:fixed;
+    left:-260px;
+    top:0;
+    width:260px;
+    height:100%;
+    z-index:999;
+    transition:.3s;
+    flex-direction:column;
+    background:linear-gradient(180deg,#0b1c3d,#102a5e);
+    padding-top:20px;
+  }
+
+  .sidebar.active{
+    left:0;
+  }
+
+  .sidebar h2{
+    text-align:center;
+    margin-bottom:30px;
+  }
+
+  .sidebar a{
+    display:block;
+    padding:14px 25px;
+    text-decoration:none;
+    color:#fff;
+    border-left:4px solid transparent;
+    margin-bottom:5px;
+  }
+
+  .main-content{
+    padding:25px 20px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <div class="hamburger" id="openSidebar">☰</div>
+  <strong>StarBank</strong>
+</div>
+
+<!-- OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="dashboard-container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <h2>Star<span>Bank</span></h2>
+    <a href="index.html">Dashboard</a>
+    <a href="transfer.html">Transfer</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="profile.html">Profile</a>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <h1>Welcome, <span id="userName">Loading...</span></h1>
+
+    <div class="profile-card" id="profileInfo">Loading profile…</div>
+    <div class="profile-card" id="balanceCard">Balance: $0</div>
+    <!-- TRANSFER -->
+    <div class="transfer-box">
+      <h3>Transfer Funds</h3><br>
+
+      <input type="text" id="recipientAccount" placeholder="Recipient Account Number" oninput="lookupRecipient()">
+
+      <div id="recipientInfo" class="recipient-info" style="display:none"></div>
+
+      <input type="number" id="transferAmount" placeholder="Amount">
+
+      <button onclick="initiateTransfer()">Generate OTP</button>
+
+      <div id="otpBox" style="display:none;margin-top:10px">
+        <input type="text" id="otpInput" placeholder="Enter OTP">
+        <button onclick="confirmTransfer()">Confirm Transfer</button>
+      </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/dashboard.js"></script>
+
+<script>
+/* ===== SIDEBAR TOGGLE ===== */
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("sidebarOverlay");
+const openBtn = document.getElementById("openSidebar");
+
+openBtn.onclick = () => {
+  sidebar.classList.add("active");
+  overlay.style.display = "block";
+};
+
+overlay.onclick = () => {
+  sidebar.classList.remove("active");
+  overlay.style.display = "none";
+};
+
+// Hide sidebar after clicking a link on mobile
+document.querySelectorAll('.sidebar a').forEach(link => {
+  link.addEventListener('click', () => {
+    if(window.innerWidth <= 900){
+      sidebar.classList.remove('active');
+      overlay.style.display = 'none';
+    }
+  });
+});
+</script>
+
+</body>
+</html>

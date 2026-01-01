@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transactions | StarBank</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+
+<style>
+/* ===== MOBILE HEADER ===== */
+.mobile-header{
+  display:none;
+  background:#102a5e;
+  color:#fff;
+  padding:15px 20px;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.hamburger{
+  font-size:26px;
+  cursor:pointer;
+}
+
+/* ===== OVERLAY ===== */
+.sidebar-overlay{
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.4);
+  z-index:998;
+}
+
+/* ===== MOBILE SIDEBAR ===== */
+@media(max-width:900px){
+  .mobile-header{
+    display:flex;
+  }
+
+  .dashboard-container{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    position:fixed;
+    left:-260px;
+    top:0;
+    width:260px;
+    height:100%;
+    z-index:999;
+    transition:.3s;
+    flex-direction:column;
+    background:linear-gradient(180deg,#0b1c3d,#102a5e);
+    padding-top:20px;
+  }
+
+  .sidebar.active{
+    left:0;
+  }
+
+  .sidebar h2{
+    text-align:center;
+    margin-bottom:30px;
+  }
+
+  .sidebar a{
+    display:block;
+    padding:14px 25px;
+    text-decoration:none;
+    color:#fff;
+    border-left:4px solid transparent;
+    margin-bottom:5px;
+  }
+
+  .main-content{
+    padding:25px 20px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <div class="hamburger" id="openSidebar">☰</div>
+  <strong>StarBank</strong>
+</div>
+
+<!-- OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="dashboard-container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <h2>Star<span>Bank</span></h2>
+    <a href="index.html">Dashboard</a>
+    <a href="transfer.html">Transfer</a>
+    <a href="transactions.html">Transactions</a>
+    <a href="profile.html">Profile</a>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <h1>Transaction History</h1>
+    <div id="transactions">
+      <p>Loading transactions...</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ===== SIDEBAR TOGGLE ===== */
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("sidebarOverlay");
+const openBtn = document.getElementById("openSidebar");
+
+openBtn.onclick = () => {
+  sidebar.classList.add("active");
+  overlay.style.display = "block";
+};
+
+overlay.onclick = () => {
+  sidebar.classList.remove("active");
+  overlay.style.display = "none";
+};
+
+document.querySelectorAll('.sidebar a').forEach(link => {
+  link.addEventListener('click', () => {
+    if(window.innerWidth <= 900){
+      sidebar.classList.remove('active');
+      overlay.style.display = 'none';
+    }
+  });
+});
+
+/* ===== LOAD TRANSACTIONS ===== */
+const supabaseClient = supabase.createClient(
+  "https://twdginhsctejjqyfwqxm.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3ZGdpbmhzY3RlampxeWZ3cXhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTg3NTEsImV4cCI6MjA4MjI3NDc1MX0.7x5TdZGIGb8-icaJKWC9YWhCxbllZ7Zyz9fthDsFoUc"
+);
+
+let CURRENT_USER;
+
+async function loadTransactionsPage(){
+  const { data:{ user } } = await supabaseClient.auth.getUser();
+  if(!user){ location.href="../auth/login.html"; return; }
+  CURRENT_USER = user;
+
+  const { data } = await supabaseClient
+    .from("transactions")
+    .select("*")
+    .or(`sender_id.eq.${CURRENT_USER.id},receiver_id.eq.${CURRENT_USER.id}`)
+    .order("created_at",{ascending:false});
+
+  const container = document.getElementById("transactions");
+  container.innerHTML = "";
+
+  if(!data || data.length === 0){
+    container.innerHTML = "<p>No transactions yet.</p>";
+    return;
+  }
+
+  data.forEach(tx=>{
+    const direction = tx.sender_id === CURRENT_USER.id ? "Sent" : "Received";
+    const statusClass = tx.status === "completed" ? "status-completed" :
+                        tx.status === "pending" ? "status-pending" :
+                        "status-failed";
+    const dateStr = new Date(tx.created_at).toLocaleString();
+
+    const card = document.createElement("div");
+    card.className = "tx-card";
+    card.innerHTML = `
+      <strong>${direction}</strong> — $${tx.amount}<br>
+      <span class="${statusClass}">${tx.status}</span><br>
+      <small>${dateStr}</small>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* LOGOUT */
+document.getElementById("logoutBtn").onclick = async () => {
+  await supabaseClient.auth.signOut();
+  location.href="../auth/login.html";
+};
+
+loadTransactionsPage();
+</script>
+
+</body>
+</html>

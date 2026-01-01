@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StarBank & NovaBank | Secure Digital Banking</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+  }
+
+  body {
+    background: #f4f7fb;
+    color: #1e293b;
+    line-height: 1.6;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 8%;
+    background: #0b1c3d;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffd700;
+  }
+
+  .logo span {
+    color: #fff;
+  }
+
+  .nav-buttons a {
+    margin-left: 10px;
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s ease;
+    display: inline-block;
+  }
+
+  .btn-login {
+    border: 1px solid #ffd700;
+    color: #ffd700;
+  }
+
+  .btn-login:hover {
+    background: #ffd700;
+    color: #0b1c3d;
+  }
+
+  .btn-signup {
+    background: #ffd700;
+    color: #0b1c3d;
+  }
+
+  .btn-signup:hover {
+    background: #e6c200;
+  }
+
+  /* ===== HERO SECTION ===== */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 40px;
+    padding: 60px 8%;
+    background: linear-gradient(to right, #0b1c3d, #102a5e);
+    color: #fff;
+  }
+
+  .hero-text h1 {
+    font-size: 42px;
+    line-height: 1.3;
+    margin-bottom: 20px;
+  }
+
+  .hero-text p {
+    font-size: 16px;
+    opacity: 0.9;
+    margin-bottom: 30px;
+  }
+
+  .hero-actions a {
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 10px;
+    padding: 12px 28px;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: 0.3s ease;
+  }
+
+  .hero-actions .primary {
+    background: #ffd700;
+    color: #0b1c3d;
+  }
+
+  .hero-actions .primary:hover {
+    background: #e6c200;
+  }
+
+  .hero-actions .secondary {
+    border: 1px solid #fff;
+    color: #fff;
+  }
+
+  .hero-actions .secondary:hover {
+    background: #fff;
+    color: #0b1c3d;
+  }
+
+  .hero-image img {
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    animation: float 4s ease-in-out infinite;
+    display: block;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* ===== TRUST SECTION ===== */
+  .trust {
+    padding: 60px 8%;
+    background: #fff;
+    text-align: center;
+  }
+
+  .trust h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
+
+  .trust p {
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+    color: #64748b;
+  }
+
+  .badges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 25px;
+    justify-items: center;
+  }
+
+  .badge {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    text-align: center;
+  }
+
+  .badge:hover {
+    transform: translateY(-5px);
+  }
+
+  .badge img {
+    width: 50px;
+    margin-bottom: 15px;
+  }
+
+  .badge h4 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .badge span {
+    font-size: 14px;
+    color: #64748b;
+  }
+
+  /* ===== DISCLAIMER ===== */
+  .disclaimer {
+    background: #0b1c3d;
+    color: #cbd5f5;
+    text-align: center;
+    padding: 25px 8%;
+    font-size: 13px;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .hero {
+      grid-template-columns: 1fr;
+      text-align: center;
+      padding: 50px 6%;
+    }
+
+    .hero-text h1 {
+      font-size: 36px;
+    }
+
+    .hero-text p {
+      font-size: 15px;
+    }
+
+    .hero-image img {
+      max-width: 400px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    header {
+      flex-direction: column;
+      gap: 10px;
+      padding: 15px 5%;
+    }
+
+    .nav-buttons a {
+      margin-left: 0;
+      margin-right: 10px;
+      padding: 10px 22px;
+    }
+
+    .hero-text h1 {
+      font-size: 28px;
+    }
+
+    .hero-text p {
+      font-size: 14px;
+    }
+
+    .hero-actions a {
+      width: 100%;
+      text-align: center;
+    }
+
+    .trust h2 {
+      font-size: 24px;
+    }
+
+    .trust p {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-text h1 {
+      font-size: 24px;
+    }
+
+    .hero-text p {
+      font-size: 13px;
+    }
+
+    .badge h4 {
+      font-size: 14px;
+    }
+
+    .badge span {
+      font-size: 12px;
+    }
+
+    .hero-image img {
+      max-width: 300px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">StarBank<span>.</span></div>
+    <div class="nav-buttons">
+      <a href="/auth/login.html" class="btn-login">Login</a>
+      <a href="/auth/register.html" class="btn-signup">Create Account</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Secure, Smart & Simple Digital Banking</h1>
+      <p>
+        Experience seamless banking with StarBank and NovaBank.
+        Create an account in minutes, manage your money securely,
+        and transfer funds within our trusted banking network.
+      </p>
+      <div class="hero-actions">
+        <a href="/auth/register.html" class="primary">Open an Account</a>
+        <a href="/auth/login.html" class="secondary">Login</a>
+      </div>
+    </div>
+
+    <div class="hero-image">
+      <img src="/assets/img/logo.png" alt="Digital Banking">
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="trust">
+    <h2>Why Choose Our Banking Platform?</h2>
+    <p>
+      Built with security, simplicity, and performance in mind.
+      Designed to feel like a real modern bank.
+    </p>
+
+    <div class="badges">
+      <div class="badge">
+        <img src="https://img.icons8.com/fluency/96/lock.png" />
+        <h4>Secure Accounts</h4>
+        <span>Encrypted & protected user data</span>
+      </div>
+
+      <div class="badge">
+        <img src="https://img.icons8.com/fluency/96/bank.png" />
+        <h4>Dual Bank System</h4>
+        <span>StarBank & NovaBank network</span>
+      </div>
+
+      <div class="badge">
+        <img src="https://img.icons8.com/fluency/96/transaction.png" />
+        <h4>Instant Transfers</h4>
+        <span>Fast internal bank transfers</span>
+      </div>
+
+      <div class="badge">
+        <img src="https://img.icons8.com/fluency/96/smartphone.png" />
+        <h4>Mobile Friendly</h4>
+        <span>Perfect on all devices</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCLAIMER -->
+  <footer class="disclaimer">
+    ⚠ This platform is a demo digital banking system for educational purposes only.
+    No real money or real banking services are involved.
+  </footer>
+
+</body>
+</html>

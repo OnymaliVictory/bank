@@ -1,0 +1,287 @@
+07056554030Jessie
+
+2️⃣ Landing Page (index.html)
+
+Purpose:
+
+Trust
+
+Brand
+
+Entry point
+
+Elements:
+
+Bank name + tagline
+
+“Create Account” button
+
+“Login” button
+
+Security badges (visual only)
+
+Disclaimer (demo platform)
+
+3️⃣ Create Account Page (register.html)
+📝 Create Account Form (Frontend)
+Required Inputs:
+Field	Type	Notes
+Full Name	text	Required
+Email	email	Used for login
+Phone Number	tel	Optional v1
+Bank Selection	select	StarBank / NovaBank
+Password	password	Min 8 chars
+Confirm Password	password	Must match
+Accept Terms	checkbox	Required
+UX Rules:
+
+Password strength indicator
+
+Disable submit until valid
+
+Loading state on submit
+
+Error handling UI
+
+🔐 Frontend Validation Rules
+
+Email format valid
+
+Password ≥ 8 chars
+
+Passwords match
+
+Bank selected
+
+📧 Email Confirmation Flow (Frontend View)
+
+After successful signup:
+
+Redirect user to:
+
+/auth/verify.html
+
+verify.html Content:
+
+Message:
+
+“Your account has been created successfully 🎉
+Please check your email to verify your account.”
+
+Button:
+
+“Resend verification email”
+
+Auto redirect to login after verification (later)
+
+⚠️ Frontend does not send email — backend does
+Frontend only displays status
+
+4️⃣ Login Page (login.html)
+🔑 Login Form
+Inputs:
+
+Email
+
+Password
+
+Options:
+
+Remember me (optional)
+
+Forgot password link
+
+Behavior:
+
+Show errors:
+
+Invalid credentials
+
+Account not verified
+
+Account frozen
+
+5️⃣ Dashboard Structure (/dashboard/index.html)
+
+This is where users spend 90% of their time.
+
+🧱 Dashboard Layout
+-----------------------------------
+| Sidebar | Main Content          |
+|         |                       |
+|         | Account Summary Card  |
+|         | Balance               |
+|         | Account Number        |
+|         | Bank Name             |
+|         |                       |
+|         | Quick Actions         |
+|         | Transfer | History   |
+|         |                       |
+-----------------------------------
+
+🧾 Account Summary Card
+
+Displays:
+
+Full Name
+
+Bank Name
+
+Account Number
+
+Balance
+
+Account Status
+
+⚡ Quick Actions
+
+Buttons:
+
+Transfer Money
+
+View Transactions
+
+Profile Settings
+
+6️⃣ Transfer Page (transfer.html) – UI Only
+
+Fields:
+
+Recipient Account Number
+
+Recipient Bank (auto-detect later)
+
+Amount
+
+Transfer Note
+
+Buttons:
+
+Confirm Transfer
+
+Cancel
+
+7️⃣ Transactions Page (transactions.html)
+
+Table:
+
+Date
+
+Description
+
+Amount
+
+Status
+
+Type (Debit/Credit)
+
+Mobile:
+
+Card-style layout
+
+8️⃣ Profile Page (profile.html)
+
+Display-only (v1):
+
+Full Name
+
+Email
+
+Phone
+
+Bank Name
+
+Account Number
+
+Future:
+
+Change password
+
+Update profile
+
+9️⃣ Global UI Components
+
+You should have reusable:
+
+Buttons
+
+Inputs
+
+Alerts
+
+Modals
+
+Loaders
+
+Toast notifications
+
+🔟 Design System (Suggested)
+
+Since this is a bank:
+
+Primary color: Deep Blue
+
+Accent: Gold
+
+Background: Soft gray / white
+
+Font: Inter / Poppins
+
+Rounded cards
+
+Smooth animations
+
+1️⃣1️⃣ Frontend States to Plan For
+
+Very important:
+
+Loading
+
+Success
+
+Error
+
+Empty data
+
+Disabled actions
+
+1️⃣2️⃣ Frontend Data Flow (No Backend Yet)
+User submits form
+→ Show loading
+→ Fake success (for now)
+→ Redirect
+
+
+Later:
+
+Replace fake data with Supabase/Firebase responses
+
+✅ What I Can Build Next (Your Choice)
+
+I can now:
+
+1️⃣ Create full HTML structure for all pages
+2️⃣ Design login & register UI (bank-grade)
+3️⃣ Build dashboard UI with animations
+4️⃣ Create CSS design system (global.css)
+5️⃣ Make it fully responsive (mobile first)
+
+👉 Reply with the number(s) you want next.
+I recommend starting with 2 + 3 together for momentum 🚀
+
+
+
+
+
+Now we move into real banking UI.
+
+Choose next:
+
+1️⃣ User Dashboard UI (account overview)
+2️⃣ Connect register.html → Supabase Auth
+3️⃣ Connect login.html → Supabase Auth
+4️⃣ Add loading + success + error states
+
+👉 I recommend 1️⃣ Dashboard UI next, then we wire Supabase cleanly after.
+
+Reply with the number — we continue immediately 💳✨
