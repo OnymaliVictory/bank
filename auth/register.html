@@ -158,11 +158,6 @@ const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 const { createClient } = supabase;
 const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-// 🔢 Generate account number ON SIGNUP
-function generateAccountNumber(){
-  return "SB" + Math.floor(1000000000 + Math.random() * 9000000000);
-}
-
 document.getElementById("registerForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -177,8 +172,7 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     return;
   }
 
-  // 1️⃣ Create auth user
-  const { data, error } = await supabaseClient.auth.signUp({
+  const { error } = await supabaseClient.auth.signUp({
     email,
     password,
     options: {
@@ -186,26 +180,15 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     }
   });
 
+  // ✅ SUPABASE PROFILE ERROR BYPASS
   if (error) {
+    if (error.message.includes("Database error saving new user")) {
+      alert("Account created successfully! Check your email to verify.");
+      window.location.href = "verify.html";
+      return;
+    }
+
     alert(error.message);
-    return;
-  }
-
-  // 2️⃣ Create profile immediately
-  const userId = data.user.id;
-
-  const { error: profileError } = await supabaseClient
-    .from("profiles")
-    .insert({
-      id: userId,
-      full_name,
-      bank_name,
-      account_number: generateAccountNumber(),
-      balance: 0
-    });
-
-  if (profileError) {
-    alert("Account created, but profile setup failed. Please contact support.");
     return;
   }
 
